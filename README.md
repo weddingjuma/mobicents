@@ -176,10 +176,11 @@ public static void task(){
 执行成功400/400，执行时间82.4s
 效果较之前结果提升了29.3%。
 
-通过观查JConsole的结果可知，当产生400个并发请求时，mobicents会由RA产生400个线程并发响应请求，并在操作结束后关闭线程
+通过观查JConsole的结果可知，当产生400个并发请求时，mobicents会由RA产生400个线程并发响应请求，并在操作结束后关闭线程。
+同时，并没有创建过多的新的对象，JAVA堆内存的使用量很接近
 ![](https://github.com/sainty7/mobicents/blob/master/photos/1.jpg)
 当RA执行完毕后线程结束，此时一共较之前增加了50个线程（即新创建的EventRouter数量）。
-![](https://github.com/sainty7/mobicents/blob/master/photos/2.jpg)
+![](https://github.com/sainty7/mobicents/blob/master/photos/2.png)
 此时实验结果显示当整个响应结束之后线程数量达到了470个，是因为eventrouter一共执行了三次resize()操作，当创建400个eventrouter后，并没有任务关闭方法关闭它们。
 
 ### [（五）后期改进](http://##)
