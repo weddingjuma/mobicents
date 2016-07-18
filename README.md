@@ -168,5 +168,25 @@ public static void task(){
 ```
 ### [（四）实验结果展示](http://##)
 
+实验条件：
+线程数量50，每个EventRouter队列数量为10，并发请求400。
+改进前：
+执行成功382/400，执行时间116.6s
+改进后：
+执行成功400/400，执行时间82.4s
+效果较之前结果提升了29.3%。
+
+通过观查JConsole的结果可知，当产生400个并发请求时，mobicents会由RA产生400个线程并发响应请求，并在操作结束后关闭线程
+![](https://github.com/sainty7/mobicents/blob/master/photos/1.jpg)
+当RA执行完毕后线程结束，此时一共较之前增加了50个线程（即新创建的EventRouter数量）。
+![](https://github.com/sainty7/mobicents/blob/master/photos/2.jpg)
+此时实验结果显示当整个响应结束之后线程数量达到了470个，是因为eventrouter一共执行了三次resize()操作，当创建400个eventrouter后，并没有任务关闭方法关闭它们。
+
+### [（五）后期改进](http://##)
+>1.增加任务关闭机制的代码
+2.使用nginx构建反向代理，搭建mobicents集群
+3.根据不同的业务，分流至不同的机器上执行
+
+
 作者 sainty    
 2015 年 07月 14日   
