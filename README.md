@@ -185,8 +185,8 @@ public static void task(){
 
 ### [（五）后期改进](http://##)
 >1.增加任务关闭机制的代码
-2.使用nginx构建反向代理，搭建mobicents集群
-3.根据不同的业务，分流至不同的机器上执行
+>2.使用nginx构建反向代理，搭建mobicents集群
+>3.根据不同的业务，分流至不同的机器上执行
 
 
 作者 sainty    
