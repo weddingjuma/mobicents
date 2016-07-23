@@ -21,6 +21,7 @@ Mobicents 是一个专业开源的 VoIP 中间件平台。Mobicents 是第一个
 
 JAIN SLEE 是一个以事件为驱动的中间件，采用了各个服务单元(Sbb)消息机制，减少了在事物处理上的等待延迟，其工作方式是从外部协议资源扫描事件状态，然后将这 些事件递交到各个处理单元去，可以以它为核心设计成网关和网守，软交换上层的应用服务器，媒体服务器等多种设备，同时适配多种交换协议。
 ![](https://github.com/sainty7/Mobicents/blob/master/photos/image002.jpg)
+
 1> SBB 服务管理单元（Sbb Service Management）：这个部分面向上层的应用，也就是 Service Block Building 的构造和部署的主要部分，其中包含了对象持久性（Persistence），类似 EJB 的CMP 一样，对数据对象的持久性（包括生存期和数据库连接等等）由 SLEE 容器自动完成的，SBB 分成 Sbb 实体和 Sbb 对象两个组成。对整个 Sbb 的服务管理单元来说，包含有 Sbb 工厂，持久性管理，Sbb 对象池管理，服务部署者，这些对于实际的使用者而言是不可见的。用户的应用部署文件是 sbb.jar，而用户服务描述是 service.xml。
 
 2> Sbb 运行环境（Sbb Runtime）：Sbb 运行环境就是Sbb的执行体，核心是事件导向单元--Event Router，（获得事件并且分配导入到指定的 Sbb 中去），SLEE 端点管理（连接资源适配器产生事件送达端点），通过上下文（Context）方式来实现各个实体之间的联系（参看图7），和 Sbb服务管理单元之间的接口是 ActivityContext（以下为活跃实体或者行为实体上下文），用于表示独立的事件接口；和资源适配器之间的接口是 Activity，也就是行为实体，具体事件的封装，例如 SIP 的注册事件（SIP Register），这个事件会引发 Sbb 的相关注册服务（例如 RegisteraSbb）；另一个接口是 SLEE Activity，这个是 SLEE 内部的行为实体，例如一些内部的工具产生的行为实体，例如定时器事件（Timer Event）和用于调试的 Trace 事件。
@@ -44,6 +45,7 @@ JAIN SLEE 是一个以事件为驱动的中间件，采用了各个服务单元(
 每当事件要选择event router来完成事件路由工作时，会调用getExecutors（）方法，默认的获取方式使用是计算ActivityContextHandler参数的hash值进行随机获取，也可以采用RR轮询的方式。因此原本router的选择是一种无状态的随机的方式。
 
 当获取了EventRouterExecutorImpl对象之后，该对象会使用ExecutorService生成一个newSingleThread,这个新的线程会真正处理事件的转发过程。此时新的线程是生产者消费者模式，事件进入该线程后会先进入LinkedBlockingQueue中排队，等待消费者执行事件转发过程。
+![](https://github.com/sainty7/mobicents/blob/master/photos/3.png)
 
 修改一：每次执行setExecutor()方法时，会使用对象锁（因为EventRouterImpl对象的实现是单例模式）依次获取每个EventRouterExecutorImpl对象中ExecutorService的LinkedBlockingQueue中的队列个数。只要有任意一个线程中的队列个数超过该线程队列总数的2/5，就会执行resize()方法，即增加新的线程（即增加新的EventRouterExecutorImpl对象，也就是增加ExecutorService的个数）来处理事件路由。
 ```java
